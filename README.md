@@ -4,24 +4,24 @@
 
 ---
 
-## Architecture & Authentication Flow
+## 1. Architecture & Web Experience
 
 ### Trusted Web Activity (TWA) Integration
-Jules Mobile utilizes **AndroidX Trusted Web Activity (TWA)** (`androidx.browser.trusted`) rather than an embedded WebView.
+Jules Mobile utilizes **AndroidX Trusted Web Activity (TWA)** (`androidx.browser.trusted`) rather than a restricted WebView.
 
 #### Key Benefits of TWA:
-1. **Full Standalone Mobile App Experience**:
-   - Runs full-screen without address bar, browser tabs, or browser chrome.
-   - Preserves native performance, animations, AI conversations, session states, agent workflows, GitHub repo interactions, and file upload/download capabilities.
+1. **Full Mobile App Experience**:
+   - Runs full-screen without address bar, browser tabs, or chrome UI during normal usage.
+   - Supports all official Jules features: AI conversations, sessions, agent progress, GitHub repository activity, commits, branches, and file uploads/downloads.
 2. **Shared Google & GitHub Sessions**:
-   - TWA shares cookie storage directly with Chrome / device browser.
-   - When tapping "Sign in with Google", Google OAuth utilizes your existing browser session seamlessly without triggering WebView `disallowed_useragent` blocks.
+   - TWA shares cookie storage directly with Google Chrome / device browser.
+   - When tapping "Sign in with Google", OAuth utilizes your existing device browser session seamlessly without triggering WebView `disallowed_useragent` security blocks.
 3. **No API Keys or Custom Backends**:
    - Uses the official `jules.google.com` application directly without custom API keys or proxy servers.
 
 ---
 
-## Digital Asset Links Verification (`/.well-known/assetlinks.json`)
+## 2. Digital Asset Links Verification (`/.well-known/assetlinks.json`)
 
 To remove the browser address bar in a Trusted Web Activity, Android requires Digital Asset Links domain association between the app's signing key fingerprint and the target web origin:
 
@@ -29,7 +29,7 @@ To remove the browser address bar in a Trusted Web Activity, Android requires Di
 https://jules.google.com/.well-known/assetlinks.json
 ```
 
-### Statement Statement Resource:
+### Statement Resource:
 The app declares Digital Asset Links metadata in `app/src/main/res/values/asset_statements.xml`:
 ```xml
 <string name="asset_statements" translatable="false">
@@ -50,7 +50,38 @@ Since `jules.google.com` is hosted directly by Google, hosting a custom `assetli
 
 ---
 
-## Downloading the APK
+## 3. Hebrew Translation Feature (🌐 עברית)
+
+Jules Mobile includes built-in Hebrew translation instructions:
+- **Chrome Native Page Translation**: When Jules opens in TWA / Custom Tabs mode, utilize the Chrome overflow menu (⋮) -> **Translate...** -> **Hebrew (עברית)**.
+- **Dynamic Content & Conversation**: Google Chrome's native translation engine translates visible UI text, Jules responses, agent activity logs, and new dynamic conversation messages in real-time without breaking button click listeners, GitHub links, or code blocks.
+
+---
+
+## 4. Permanent Release Signing Configuration
+
+To ensure future APK updates install seamlessly over existing app installations without needing to uninstall previous versions:
+
+### Application ID:
+`com.yeledtov.julesmobile` (Unchanged)
+
+### Permanent Keystore Details:
+- **Keystore filename**: `jules-mobile-release.jks`
+- **Key Alias**: `jules-mobile`
+- **Certificate Name**: `Jules Mobile`
+
+> **Note on Initial Installation**: If you previously installed an early ad-hoc debug build, **uninstall that version ONCE** before installing the new permanently signed release build. All future updates will install directly over this version without uninstalling.
+
+### GitHub Actions Secrets Configuration:
+To enable automated signed release builds in CI, add the following Repository Secrets in GitHub (`Settings` -> `Secrets and variables` -> `Actions`):
+- `KEYSTORE_BASE64`: Base64 encoded string of `jules-mobile-release.jks`
+- `KEY_ALIAS`: `jules-mobile`
+- `STORE_PASSWORD`: Keystore password
+- `KEY_PASSWORD`: Key password
+
+---
+
+## 5. Downloading the APK
 
 Automated builds run on every push and pull request via GitHub Actions.
 
@@ -59,18 +90,11 @@ To download the latest APK:
 2. Click on the **Actions** tab.
 3. Click the most recent workflow run (**Build Jules Mobile APK**).
 4. Scroll down to **Artifacts** at the bottom.
-5. Download **`jules-mobile-debug-apk`**.
+5. Download **`jules-mobile-debug-apk`** or **`jules-mobile-release-apk`**.
 
 ---
 
-## Device Requirements
-
-- **Browser Requirement**: Requires Google Chrome (or a compatible Custom Tabs browser) installed on the device.
-- **Fallback Warning**: If no compatible browser is present on the device, the app displays a clear warning screen explaining that Google Chrome or a compatible browser is required.
-
----
-
-## Building from Source
+## 6. Building from Source
 
 ### Prerequisites
 - JDK 17 or higher
@@ -87,4 +111,4 @@ chmod +x gradlew
 
 The compiled APKs will be located at:
 - `app/build/outputs/apk/debug/app-debug.apk`
-- `app/build/outputs/apk/release/app-release-unsigned.apk`
+- `app/build/outputs/apk/release/app-release-unsigned.apk` (or signed release)

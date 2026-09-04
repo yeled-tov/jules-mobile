@@ -18,6 +18,7 @@ import com.yeledtov.julesmobile.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var isHebrewRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -33,11 +34,20 @@ class MainActivity : AppCompatActivity() {
             binding.browserWarningCard.visibility = View.VISIBLE
             binding.launchButton.isEnabled = false
             binding.launchButton.text = "Browser Not Found"
+            binding.hebrewButton.isEnabled = false
         } else {
             binding.browserWarningCard.visibility = View.GONE
             binding.launchButton.isEnabled = true
+            binding.hebrewButton.isEnabled = true
+
             binding.launchButton.setOnClickListener {
+                isHebrewRequested = false
                 launchJulesTWA(intent?.data?.toString() ?: JULES_URL)
+            }
+
+            binding.hebrewButton.setOnClickListener {
+                isHebrewRequested = true
+                launchJulesTWA(intent?.data?.toString() ?: JULES_HEBREW_URL)
             }
         }
 
@@ -48,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        val url = intent?.data?.toString() ?: JULES_URL
+        val url = intent?.data?.toString() ?: (if (isHebrewRequested) JULES_HEBREW_URL else JULES_URL)
         if (getCustomTabsPackageName() != null || isAnyBrowserAvailable()) {
             launchJulesTWA(url)
         }
@@ -65,12 +75,12 @@ class MainActivity : AppCompatActivity() {
                 .setNavigationBarColor(primaryColor)
                 .build()
 
-            // Trusted Web Activity (TWA) Builder for full-screen standalone app experience
-            val twaBuilder = TrustedWebActivityIntentBuilder(targetUri)
+            // Custom Tabs / TWA Intent Builder with brand dark color theme
+            val customTabsIntent = CustomTabsIntent.Builder()
                 .setDefaultColorSchemeParams(colorParams)
-                .setDisplayMode(TrustedWebActivityDisplayMode.ImmersiveMode(true, 0))
+                .setShowTitle(true)
+                .build()
 
-            val customTabsIntent = twaBuilder.buildCustomTabsIntent()
             customTabsIntent.intent.putExtra(
                 CustomTabsIntent.EXTRA_COLOR_SCHEME,
                 CustomTabsIntent.COLOR_SCHEME_DARK
@@ -117,6 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val JULES_URL = "https://jules.google.com"
+        private const val JULES_HEBREW_URL = "https://jules.google.com/?hl=he"
 
         private val SUPPORTED_BROWSERS = listOf(
             "com.android.chrome",

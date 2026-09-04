@@ -1,86 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/brand_background"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:fillViewport="true">
 
-    <ImageView
-        android:id="@+id/logoImage"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_splash_logo" />
-
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/subtitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Official Google Jules Mobile Launcher"
-        android:textColor="#A0A0A0"
-        android:textSize="14sp" />
-
-    <!-- Card shown if compatible browser is missing -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/browserWarningCard"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:visibility="gone"
-        app:cardBackgroundColor="#2A1B1B"
-        app:cardCornerRadius="12dp"
-        app:strokeColor="#E53935"
-        app:strokeWidth="1dp"
-        tools:visibility="visible">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_splash_logo" />
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/subtitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Official Google Jules Mobile App"
+            android:textColor="#A0A0A0"
+            android:textSize="14sp" />
+
+        <!-- Hebrew Translation Info Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/translationInfoCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="#1E1B2E"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="#7C3AED"
+            app:strokeWidth="1dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Compatible Browser Required"
-                android:textColor="#FF8A80"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🌐 עברית - תרגום מובנה"
+                    android:textColor="#C084FC"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Jules מורץ ישירות ב-Trusted Web Activity. כדי לתרגם את השיחות והממשק לעברית בזמן אמת, לחצו על כפתור התרגום לעברית למטה או השתמשו בתפריט התרגום המובנה בדפדפן."
+                    android:textColor="#E0E0E0"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card shown if compatible browser is missing -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/browserWarningCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#2A1B1B"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="#E53935"
+            app:strokeWidth="1dp"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Google authentication requires Google Chrome or a compatible Custom Tabs browser installed on your device to share your logged-in Google session safely."
-                android:textColor="#D0D0D0"
-                android:textSize="13sp" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/launchButton"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginTop="32dp"
-        android:text="Open Jules Mobile"
-        android:textAllCaps="false"
-        android:textSize="16sp"
-        app:backgroundTint="@color/brand_blue"
-        app:cornerRadius="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Compatible Browser Required"
+                    android:textColor="#FF8A80"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Google authentication requires Google Chrome or a compatible Custom Tabs browser installed on your device to share your logged-in Google session safely."
+                    android:textColor="#D0D0D0"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/launchButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:text="Open Jules Mobile"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:backgroundTint="@color/brand_purple"
+            app:cornerRadius="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/hebrewButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:text="🌐 עברית (פתח בעברית)"
+            android:textAllCaps="false"
+            android:textColor="#C084FC"
+            android:textSize="16sp"
+            app:cornerRadius="12dp"
+            app:strokeColor="#7C3AED"
+            app:strokeWidth="1dp" />
+
+    </LinearLayout>
+</ScrollView>
