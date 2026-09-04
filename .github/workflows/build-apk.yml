@@ -7,6 +7,9 @@ on:
     branches: [ "**" ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Jules Mobile APK
@@ -37,20 +40,24 @@ jobs:
           name: jules-mobile-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Decode Keystore & Build Signed Release APK
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+      - name: Build Signed Release APK (if secrets provided)
         env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_FILE: "jules-mobile-release.jks"
-          KEY_ALIAS: "${{ secrets.KEY_ALIAS }}"
-          STORE_PASSWORD: "${{ secrets.STORE_PASSWORD }}"
-          KEY_PASSWORD: "${{ secrets.KEY_PASSWORD }}"
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > jules-mobile-release.jks
-          ./gradlew assembleRelease
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > jules-mobile-release.jks
+            ./gradlew assembleRelease
+          else
+            echo "KEYSTORE_BASE64 secret is not configured. Skipping release build."
+          fi
 
       - name: Upload Signed Release APK Artifact
-        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        if: hashFiles('app/build/outputs/apk/release/*.apk') != ''
         uses: actions/upload-artifact@v4
         with:
           name: jules-mobile-release-apk
-          path: app/build/outputs/apk/release/
+          path: app/build/outputs/apk/release/*.apk
