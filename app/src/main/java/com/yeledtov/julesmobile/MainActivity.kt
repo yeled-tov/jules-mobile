@@ -6,15 +6,18 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.trusted.TrustedWebActivityDisplayMode
+import androidx.browser.trusted.TrustedWebActivityIntentBuilder
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.yeledtov.julesmobile.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var hasLaunchedOnStart = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -34,13 +37,12 @@ class MainActivity : AppCompatActivity() {
             binding.browserWarningCard.visibility = View.GONE
             binding.launchButton.isEnabled = true
             binding.launchButton.setOnClickListener {
-                launchJulesTab(intent?.data?.toString() ?: JULES_URL)
+                launchJulesTWA(intent?.data?.toString() ?: JULES_URL)
             }
         }
 
         if (savedInstanceState == null && hasBrowser) {
-            hasLaunchedOnStart = true
-            launchJulesTab(intent?.data?.toString() ?: JULES_URL)
+            launchJulesTWA(intent?.data?.toString() ?: JULES_URL)
         }
     }
 
@@ -48,31 +50,53 @@ class MainActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         val url = intent?.data?.toString() ?: JULES_URL
         if (getCustomTabsPackageName() != null || isAnyBrowserAvailable()) {
-            launchJulesTab(url)
+            launchJulesTWA(url)
         }
     }
 
-    private fun launchJulesTab(url: String) {
+    private fun launchJulesTWA(url: String) {
         val customTabsPackage = getCustomTabsPackageName()
         val targetUri = Uri.parse(url)
 
         try {
-            val builder = CustomTabsIntent.Builder()
-                .setShowTitle(true)
-                .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
+            val primaryColor = ContextCompat.getColor(this, R.color.brand_background)
+            val colorParams = CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(primaryColor)
+                .setNavigationBarColor(primaryColor)
+                .build()
 
-            val customTabsIntent = builder.build()
+            // Trusted Web Activity (TWA) Builder for full-screen standalone app experience
+            val twaBuilder = TrustedWebActivityIntentBuilder(targetUri)
+                .setDefaultColorSchemeParams(colorParams)
+                .setDisplayMode(TrustedWebActivityDisplayMode.ImmersiveMode(true, 0))
+
+            val customTabsIntent = twaBuilder.buildCustomTabsIntent()
+            customTabsIntent.intent.putExtra(
+                CustomTabsIntent.EXTRA_COLOR_SCHEME,
+                CustomTabsIntent.COLOR_SCHEME_DARK
+            )
+
             if (customTabsPackage != null) {
                 customTabsIntent.intent.setPackage(customTabsPackage)
             }
+
             customTabsIntent.launchUrl(this, targetUri)
         } catch (e: Exception) {
+            // Fallback to Chrome Custom Tabs or standard browser intent
             try {
-                val browserIntent = Intent(Intent.ACTION_VIEW, targetUri)
-                startActivity(browserIntent)
+                val customTabsIntent = CustomTabsIntent.Builder().setShowTitle(true).build()
+                if (customTabsPackage != null) {
+                    customTabsIntent.intent.setPackage(customTabsPackage)
+                }
+                customTabsIntent.launchUrl(this, targetUri)
             } catch (ex: Exception) {
-                binding.browserWarningCard.visibility = View.VISIBLE
-                Toast.makeText(this, "No browser available to open Jules", Toast.LENGTH_LONG).show()
+                try {
+                    val browserIntent = Intent(Intent.ACTION_VIEW, targetUri)
+                    startActivity(browserIntent)
+                } catch (lastEx: Exception) {
+                    binding.browserWarningCard.visibility = View.VISIBLE
+                    Toast.makeText(this, "No browser available to open Jules", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

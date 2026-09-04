@@ -24,6 +24,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
 
+        <!-- Digital Asset Links Meta Data -->
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/asset_statements" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -34,14 +39,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep Link Handler -->
-            <intent-filter>
+            <!-- TWA / Custom Tabs Deep Link Intent Filter for https://jules.google.com -->
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="jules.google.com"
-                    android:scheme="https" />
+                    android:scheme="https"
+                    android:host="jules.google.com" />
             </intent-filter>
         </activity>
 

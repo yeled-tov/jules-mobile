@@ -1,0 +1,6 @@
+<resources>
+    <!-- Digital Asset Links configuration for Trusted Web Activity domain verification -->
+    <string name="asset_statements" translatable="false">
+        [{\n          \"relation\": [\"delegate_permission/common.handle_all_urls\"],\n          \"target\": {\n            \"namespace\": \"web\",\n            \"site\": \"https://jules.google.com\"\n          }\n        }]
+    </string>
+</resources>
