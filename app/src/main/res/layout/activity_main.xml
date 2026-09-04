@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="Jules מורץ ישירות ב-Trusted Web Activity. כדי לתרגם את השיחות והממשק לעברית בזמן אמת, לחצו על כפתור התרגום לעברית למטה או השתמשו בתפריט התרגום המובנה בדפדפן."
+                    android:text="לחצו על כפתור התרגום לעברית למטה כדי לפתוח את Jules בעברית, או השתמשו בתפריט התרגום המובנה בדפדפן (Translate)."
                     android:textColor="#E0E0E0"
                     android:textSize="13sp" />
             </LinearLayout>
@@ -97,7 +97,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Compatible Browser Required"
+                    android:text="Browser Engine Required"
                     android:textColor="#FF8A80"
                     android:textSize="16sp"
                     android:textStyle="bold" />

@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.browser.trusted.TrustedWebActivityDisplayMode
-import androidx.browser.trusted.TrustedWebActivityIntentBuilder
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.yeledtov.julesmobile.databinding.ActivityMainBinding
@@ -18,7 +16,6 @@ import com.yeledtov.julesmobile.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var isHebrewRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -33,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         if (!hasBrowser) {
             binding.browserWarningCard.visibility = View.VISIBLE
             binding.launchButton.isEnabled = false
-            binding.launchButton.text = "Browser Not Found"
+            binding.launchButton.text = "Browser Engine Not Found"
             binding.hebrewButton.isEnabled = false
         } else {
             binding.browserWarningCard.visibility = View.GONE
@@ -41,30 +38,28 @@ class MainActivity : AppCompatActivity() {
             binding.hebrewButton.isEnabled = true
 
             binding.launchButton.setOnClickListener {
-                isHebrewRequested = false
-                launchJulesTWA(intent?.data?.toString() ?: JULES_URL)
+                launchJulesApp(intent?.data?.toString() ?: JULES_URL)
             }
 
             binding.hebrewButton.setOnClickListener {
-                isHebrewRequested = true
-                launchJulesTWA(intent?.data?.toString() ?: JULES_HEBREW_URL)
+                launchJulesApp(intent?.data?.toString() ?: JULES_HEBREW_URL)
             }
         }
 
         if (savedInstanceState == null && hasBrowser) {
-            launchJulesTWA(intent?.data?.toString() ?: JULES_URL)
+            launchJulesApp(intent?.data?.toString() ?: JULES_URL)
         }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        val url = intent?.data?.toString() ?: (if (isHebrewRequested) JULES_HEBREW_URL else JULES_URL)
+        val url = intent?.data?.toString() ?: JULES_URL
         if (getCustomTabsPackageName() != null || isAnyBrowserAvailable()) {
-            launchJulesTWA(url)
+            launchJulesApp(url)
         }
     }
 
-    private fun launchJulesTWA(url: String) {
+    private fun launchJulesApp(url: String) {
         val customTabsPackage = getCustomTabsPackageName()
         val targetUri = Uri.parse(url)
 
@@ -75,7 +70,6 @@ class MainActivity : AppCompatActivity() {
                 .setNavigationBarColor(primaryColor)
                 .build()
 
-            // Custom Tabs / TWA Intent Builder with brand dark color theme
             val customTabsIntent = CustomTabsIntent.Builder()
                 .setDefaultColorSchemeParams(colorParams)
                 .setShowTitle(true)
@@ -92,21 +86,12 @@ class MainActivity : AppCompatActivity() {
 
             customTabsIntent.launchUrl(this, targetUri)
         } catch (e: Exception) {
-            // Fallback to Chrome Custom Tabs or standard browser intent
             try {
-                val customTabsIntent = CustomTabsIntent.Builder().setShowTitle(true).build()
-                if (customTabsPackage != null) {
-                    customTabsIntent.intent.setPackage(customTabsPackage)
-                }
-                customTabsIntent.launchUrl(this, targetUri)
+                val browserIntent = Intent(Intent.ACTION_VIEW, targetUri)
+                startActivity(browserIntent)
             } catch (ex: Exception) {
-                try {
-                    val browserIntent = Intent(Intent.ACTION_VIEW, targetUri)
-                    startActivity(browserIntent)
-                } catch (lastEx: Exception) {
-                    binding.browserWarningCard.visibility = View.VISIBLE
-                    Toast.makeText(this, "No browser available to open Jules", Toast.LENGTH_LONG).show()
-                }
+                binding.browserWarningCard.visibility = View.VISIBLE
+                Toast.makeText(this, "No browser component available to open Jules", Toast.LENGTH_LONG).show()
             }
         }
     }
